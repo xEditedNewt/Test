@@ -16,11 +16,16 @@ setInterval(() => {
 }, 100000);
 
 async function add_players_data_plutonuium (){
-  db.run('INSERT INTO plutonium_players_online(hour,players) VALUES(?,?)', [await getDateFormatted(), await getPlayer("mcpe.plutonium.best")]);
+  await fetch(
+    `https://api.mcstatus.io/v2/status/bedrock/mcpe.plutonium.best`)
+    .then(res => res.json())
+    .then( async (text) => {
+  db.run('INSERT INTO plutonium_players_online(hour,players) VALUES(?,?)', [ await getDateFormatted(), text.players.online]);
   db.all('SELECT * FROM plutonium_players_online', (err, data) => {
     console.log(data)
     if (err)
       throw err
+  })
   })
 }
 
