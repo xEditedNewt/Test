@@ -1,5 +1,5 @@
 //note = pour simplifier la chose => creer un tableau avec tout les ip qui doivent etre dans le graphique
-
+const fetch = require('node-fetch');
 const sqlite3 = require('sqlite3')
 
 let db = new sqlite3.Database('./Graph Plutonium/data/players_online.db', err => {
