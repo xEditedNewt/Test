@@ -1,11 +1,37 @@
 async function getOnlinePlayer() {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/v1/players`
+        `http://hms12432.hostmyservers.me:5000/api/v1/serveur`
       );
       responses = await response.json()
-      return responses.dataa
+      serveur = responses.serveur
+      let result = [];
+      for (let i = 0; i < serveur.length; i++) {
+        let serveurinfo = await fetch(
+          `http://hms12432.hostmyservers.me:5000/api/v1/players/` + serveur[i].name
+        );
+        data = await serveurinfo.json()
+        result.push({
+          label: data.name,
+          data: await data.data.map(row => row.players),
+          borderColor: 'rgb(94,88,229)',
+          tension: 0.1
+      })   
+    }
+    return result
     } catch (error) {
+      console.error(error);
+    }
+  }
+  async function getHours() {
+    try {
+        let serveurinfo = await fetch(
+          `http://hms12432.hostmyservers.me:5000/api/v1/players/plutonium`
+        );
+        data = await serveurinfo.json()
+        return data.data.map(row => row.hour)
+    }
+    catch (error) {
       console.error(error);
     }
   }
@@ -19,6 +45,7 @@ async function getOnlinePlayer() {
       options: {
         scales: {
           y: {
+            max:200,
             ticks: { color: 'rgb(184,184,189)'},
             beginAtZero: true,
             grid : {
@@ -26,30 +53,16 @@ async function getOnlinePlayer() {
             }
           },
           x: {
-            ticks: { color: 'rgba(184,184,189,0)'},
             grid : {
               color : 'rgb(52,52,54)'
             }
           }
         },
         animation: true,
-        plugins: {
-          legend: {
-            display: false
-          },
-        }
       },
       data:{
-        labels: await data.map(row => row.hour),
-        datasets:[{
-          data: await data.map(row => row.players),
-          borderColor: 'rgb(94,88,229)',
-          tension: 0.1,
-          pointBackgroundColor : 'rgba(94,88,229,0)',
-          pointBorderColor : 'rgba(94,88,229,0)',
-          pointHoverBorderColor : 'rgb(94,88,229)',
-          spanGaps :true
-        }]
+        labels: await getHours(),
+        datasets:await getOnlinePlayer()
       }
     })
   }
